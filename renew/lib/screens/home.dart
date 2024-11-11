@@ -1,23 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:renew/screens/profilepage.dart';
+
 import 'package:renew/widgets/footer_widget.dart';
 import 'package:renew/widgets/header_widget.dart';
-import 'package:renew/widgets/post1.dart';
-import 'package:renew/widgets/post2.dart';
-import 'package:renew/widgets/post3.dart';
+import 'package:renew/widgets/post.dart';
+import 'package:renew/widgets/postcard_widget.dart';
 import 'package:renew/widgets/sidebar.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<HomePage> {
   late ScrollController _scrollController;
   bool _isHeaderVisible = true;
+
+  final List<Post> posts = [
+    Post(
+      postId: '1',
+      profileImage: 'assets/profile.png',
+      profileName: 'Navin Patil',
+      postTime: '3 hours ago',
+      caption:
+          "AsiaOne Magazine is thrilled to announce that Gruner Renewable Energy will be felicitated with the Indias Fastest Growing Sustainable Brands 2023-24 award! Established in February 2023, Gruner Renewable Energy has swiftly emerged as a premier provider of sustainable energy solutions, dedicated to reducing carbon footprints and realizing sustainability objectives. Leveraging advanced technology from Germany, their expertise lies in offering end-to-end solutions that encompass the entire plant setup process. Additionally, Gruner Renewable excels in the installation of top-tier Biogas plants, known for their affordability and user-friendliness, Headquartered in Noida. Gruner Renewable Energy is paving the way for a greener and more sustainable future where renewable energy sources play a pivotal role in mitigating environmental impact. This award is a testament to the hard work and dedication of the Gruner Renewable Energy team. Join us in congratulating Gruner Renewable Energy on this incredible achievement",
+      images: ['assets/post1.png', 'assets/post2.jpeg', 'assets/post3.jpeg'],
+      likedBy: 'waree_energies',
+      likeCount: '23',
+      otherLikes: 'others',
+    ),
+    Post(
+      postId: '2',
+      profileImage: 'assets/profile.png',
+      profileName: 'Anita Verma',
+      postTime: '5 hours ago',
+      caption: 'Exciting news from Gruner Renewable Energy...',
+      images: ['assets/post2.jpeg', 'assets/post3.jpeg'],
+      likedBy: 'green_earth',
+      likeCount: '45',
+      otherLikes: 'others',
+    ),
+    Post(
+      postId: '3',
+      profileImage: 'assets/profile.png',
+      profileName: 'Rajesh Kumar',
+      postTime: '1 day ago',
+      caption: 'Gruner Renewable Energy is making strides...',
+      images: ['assets/post3.jpeg', 'assets/post1.png'],
+      likedBy: 'eco_world',
+      likeCount: '67',
+      otherLikes: 'others',
+    ),
+  ];
 
   @override
   void initState() {
@@ -44,12 +82,11 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void _onPostSwipe(String postId) {
+  void _onPostSwipe(Post post) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfilePage(
-            postId: postId), // Navigate to the profile page with postId
+        builder: (context) => ProfilePage(post: post),
       ),
     );
   }
@@ -75,100 +112,38 @@ class _HomeState extends State<Home> {
                 ? const HeaderWidget()
                 : const SizedBox.shrink(),
           ),
-
-          // Main scrollable content
           Expanded(
-            child: SingleChildScrollView(
+            child: ListView.builder(
               controller: _scrollController,
-              child: Column(
-                children: [
-                  const SizedBox(height: 30),
-                  GestureDetector(
-                    onHorizontalDragEnd: (details) {
-                      if (details.primaryVelocity! < 0) {
-                        _onPostSwipe("post1"); // Pass post1 ID
-                      }
-                    },
-                    child: const Post1(),
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                final post = posts[index];
+                return GestureDetector(
+                  onHorizontalDragEnd: (details) {
+                    if (details.primaryVelocity! < 0) {
+                      _onPostSwipe(post); // Pass post data
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: PostCardWidget(
+                      profileImage: post.profileImage,
+                      profileName: post.profileName,
+                      postTime: post.postTime,
+                      caption: post.caption,
+                      images: post.images,
+                      likedBy: post.likedBy,
+                      likeCount: post.likeCount,
+                      otherLikes: post.otherLikes,
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                  GestureDetector(
-                    onHorizontalDragEnd: (details) {
-                      if (details.primaryVelocity! < 0) {
-                        _onPostSwipe("post2"); // Pass post2 ID
-                      }
-                    },
-                    child: const Post2(),
-                  ),
-                  const SizedBox(height: 20),
-                  GestureDetector(
-                    onHorizontalDragEnd: (details) {
-                      if (details.primaryVelocity! < 0) {
-                        _onPostSwipe("post3"); // Pass post3 ID
-                      }
-                    },
-                    child: const Post3(),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
-
-          // Footer section
           const FooterWidget(),
         ],
       ),
     );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  final String postId;
-
-  const ProfilePage({super.key, required this.postId});
-
-  @override
-  Widget build(BuildContext context) {
-    // Display different content based on postId
-    return Scaffold(
-      appBar: AppBar(title: Text('Profile of $postId')),
-      body: Center(
-        child: _getProfileDetails(postId),
-      ),
-    );
-  }
-
-  Widget _getProfileDetails(String postId) {
-    switch (postId) {
-      case 'post1':
-        return const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person, size: 100, color: Colors.blue),
-            Text('Profile Details for Post 1', style: TextStyle(fontSize: 24)),
-            // Add additional details for Post 1
-          ],
-        );
-      case 'post2':
-        return const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person, size: 100, color: Colors.green),
-            Text('Profile Details for Post 2', style: TextStyle(fontSize: 24)),
-            // Add additional details for Post 2
-          ],
-        );
-      case 'post3':
-        return const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person, size: 100, color: Colors.red),
-            Text('Profile Details for Post 3', style: TextStyle(fontSize: 24)),
-            // Add additional details for Post 3
-          ],
-        );
-      default:
-        return const Center(child: Text('No Profile Available'));
-    }
   }
 }

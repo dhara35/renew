@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   // Function to define routes
   Map<String, WidgetBuilder> _buildAppRoutes() {
     return {
-      '/': (context) => const Home(),
+      '/': (context) => const HomePage(),
       '/meets': (context) => const MeetingPage(),
       '/jobs': (context) => const JobsPage(),
       '/network': (context) => const NetworkPage(),
