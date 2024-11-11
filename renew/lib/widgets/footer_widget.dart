@@ -17,7 +17,8 @@ class FooterWidget extends StatelessWidget {
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          FooterIcon(icon: Icons.home_outlined, label: "Home", route: Home()),
+          FooterIcon(
+              icon: Icons.home_outlined, label: "Home", route: HomePage()),
           FooterIcon(icon: Icons.event, label: "Events", route: MeetingPage()),
           FooterIcon(
               icon: Icons.add_circle_outline,
